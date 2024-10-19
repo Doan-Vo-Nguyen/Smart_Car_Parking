@@ -30,6 +30,7 @@
                     <li class="menu-item-has-children dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-th"></i>Reports</a>
                         <ul class="sub-menu children dropdown-menu">
+                            <li><i class="menu-icon fa fa-th"></i><a href="general-report.php">General</a></li>
                             <li><i class="menu-icon fa fa-th"></i><a href="bwdates-report-ds.php">Between Dates Reports</a></li>
                            
                         </ul>

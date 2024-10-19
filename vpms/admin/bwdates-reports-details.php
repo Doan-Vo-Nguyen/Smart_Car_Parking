@@ -5,9 +5,6 @@ include('includes/dbconnection.php');
 if (strlen($_SESSION['vpmsaid']==0)) {
   header('location:logout.php');
   } else{
-
-
-
   ?>
 <!doctype html>
 
@@ -71,9 +68,6 @@ if (strlen($_SESSION['vpmsaid']==0)) {
         <div class="content">
             <div class="animated fadeIn">
                 <div class="row">
-                   
-         
-
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header">

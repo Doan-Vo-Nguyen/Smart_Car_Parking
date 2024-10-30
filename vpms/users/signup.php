@@ -5,7 +5,7 @@ include('includes/dbconnection.php');
 
 if(isset($_POST['submit']))
   {
-    $fname=$_POST['firstname'];
+    $fname=$_POST['fullname'];
     $lname=$_POST['lastname'];
     $contno=$_POST['mobilenumber'];
     $email=$_POST['email'];
@@ -18,7 +18,7 @@ if(isset($_POST['submit']))
 echo '<script>alert("This email or Contact Number already associated with another account")</script>';
     }
     else{
-    $query=mysqli_query($con, "insert into tblregusers(FirstName, LastName, MobileNumber, Email, Password) value('$fname', '$lname','$contno', '$email', '$password' )");
+    $query=mysqli_query($con, "insert into tblregusers(FullName, MobileNumber, Email, Password) value('$fname','$contno', '$email', '$password' )");
     if ($query) {
     
     echo '<script>alert("You have successfully registered")</script>';
@@ -79,12 +79,8 @@ return true;
                     <form method="post" onsubmit="return checkpass();">
                          
                         <div class="form-group">
-                            <label>First Name</label>
-                           <input type="text" name="firstname" placeholder="Your First Name..." required="true" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label>Last Name</label>
-                           <input type="text" name="lastname" placeholder="Your Last Name..." required="true" class="form-control">
+                            <label>Full Name</label>
+                           <input type="text" name="fullname" placeholder="Your Full Name..." required="true" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Mobile Number</label>

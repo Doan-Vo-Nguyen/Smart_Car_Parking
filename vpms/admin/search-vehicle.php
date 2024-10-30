@@ -106,18 +106,15 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                                             <tr>
                                             <tr>
                                                 <th>S.NO</th>
-
-
                                                 <th>Parking Number</th>
                                                 <th>Owner Name</th>
                                                 <th>Vehicle Reg. Number</th>
-
                                                 <th>Action</th>
                                             </tr>
                                             </tr>
                                         </thead>
                                         <?php
-                                        $ret = mysqli_query($con, "select *from   tblvehicle where ParkingNumber like '$sdata%' || RegistrationNumber like '$sdata%'");
+                                        $ret = mysqli_query($con, "select * from tblvehicle as tbveh join tblregusers as tbuser on tbveh.OwnerID = tbuser.ID like '$sdata%' || RegistrationNumber like '$sdata%'");
                                         $num = mysqli_num_rows($ret);
                                         if ($num > 0) {
                                             $cnt = 1;
@@ -130,7 +127,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
 
 
                                                     <td><?php echo $row['ParkingNumber']; ?></td>
-                                                    <td><?php echo $row['OwnerName']; ?></td>
+                                                    <td><?php echo $row['LastName']; ?></td>
                                                     <td><?php echo $row['RegistrationNumber']; ?></td>
 
                                                     <td><a href="view-incomingvehicle-detail.php?viewid=<?php echo $row['ID']; ?>" target="blank" class="btn btn-primary btn-sm">View</a></td>

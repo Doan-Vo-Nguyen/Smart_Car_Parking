@@ -100,7 +100,8 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
 
                 <?php
                 $cid = $_GET['viewid'];
-                $ret = mysqli_query($con, "select * from tblvehicle where ID='$cid'");
+                $ret = mysqli_query($con, "select * from tblvehicle as tbveh join tblregusers as
+                tbuser on tbveh.OwnerID = tbuser.ID join tblcategory as tbcate on tbveh.VehicleCategory = tbcate.ID where tbveh.ID='$cid'");
                 $cnt = 1;
                 while ($row = mysqli_fetch_array($ret)) {
 
@@ -112,7 +113,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                     </tr>
                     <tr>
                       <th>Vehicle Category</th>
-                      <td><?php echo $row['VehicleCategory']; ?></td>
+                      <td><?php echo $row['VehicleCat']; ?></td>
                     </tr>
                     <tr>
                       <th>Vehicle Company Name</th>
@@ -124,11 +125,11 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                     </tr>
                     <tr>
                       <th>Owner Name</th>
-                      <td><?php echo $row['OwnerName']; ?></td>
+                      <td><?php echo $row['LastName']; ?></td>
                     </tr>
                     <tr>
                       <th>Owner Contact Number</th>
-                      <td><?php echo $row['OwnerContactNumber']; ?></td>
+                      <td><?php echo $row['MobileNumber']; ?></td>
                     </tr>
                     <tr>
                       <th>In Time</th>

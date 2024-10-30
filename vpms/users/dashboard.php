@@ -94,8 +94,7 @@ $cnt=1;
 while ($row=mysqli_fetch_array($ret)) {
     ?> 
                                     <div class="stat-icon dib flat-color-1">
-                                        Welcome to panel !! <?php  echo $row['FirstName'];?> <?php  echo $row['LastName'];?>
-                                    </div>
+                                        Welcome to panel !! <?php  echo $row['FullName'];?>
                                     <?php } ?>
                                     </div>
                                 </div>

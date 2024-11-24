@@ -12,10 +12,8 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
     $remark = $_POST['remark'];
     $status = $_POST['status'];
     $parkingcharge = $_POST['parkingcharge'];
-
-    $query = mysqli_query($con, "update  tblvehicle set Remark='$remark',Status='$status',ParkingCharge='$parkingcharge' where ID='$cid'");
+    $query = mysqli_query($con, "UPDATE tblvehiclelogs SET Remark='$remark',Status='$status',ParkingCharge='$parkingcharge' where ID='$cid'");
     if ($query) {
-
       echo "<script>alert('All remarks has been updated');</script>";
     } else {
       echo "<script>alert('Something Went Wrong. Please try again');</script>";
@@ -100,8 +98,13 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
 
                 <?php
                 $cid = $_GET['viewid'];
-                $ret = mysqli_query($con, "select * from tblvehicle as tbveh join tblregusers as
-                tbuser on tbveh.OwnerID = tbuser.ID join tblcategory as tbcate on tbveh.VehicleCategory = tbcate.ID where tbveh.ID='$cid'");
+                $ret = mysqli_query($con, "SELECT tbvehlogs.ParkingNumber, tbcat.VehicleCat, tbvehlogs.RegistrationNumber,
+                                        tbuser.FullName,tbuser.MobileNumber,tbvehlogs.InTime,tbvehlogs.OutTime,tbvehlogs.Status,tbvehlogs.Remark,tbvehlogs.ParkingCharge
+                                        FROM tblvehiclelogs as tbvehlogs
+                                        JOIN tblvehicle as tbveh ON tbvehlogs.VehicleID=tbveh.ID
+                                        JOIN tblregusers as tbuser ON tbuser.ID=tbveh.OwnerID
+                                        JOIN tblcategory as tbcat ON tbcat.ID=tbveh.CategoryID
+                                        WHERE tbvehlogs.ID='$cid'");
                 $cnt = 1;
                 while ($row = mysqli_fetch_array($ret)) {
 
@@ -116,16 +119,12 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                       <td><?php echo $row['VehicleCat']; ?></td>
                     </tr>
                     <tr>
-                      <th>Vehicle Company Name</th>
-                      <td><?php echo $packprice = $row['VehicleCompanyname']; ?></td>
-                    </tr>
-                    <tr>
                       <th>Registration Number</th>
                       <td><?php echo $row['RegistrationNumber']; ?></td>
                     </tr>
                     <tr>
                       <th>Owner Name</th>
-                      <td><?php echo $row['LastName']; ?></td>
+                      <td><?php echo $row['FullName']; ?></td>
                     </tr>
                     <tr>
                       <th>Owner Contact Number</th>

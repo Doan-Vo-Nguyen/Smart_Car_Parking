@@ -93,7 +93,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                 <div class="row">
                     <?php
                     //todays Vehicle Entries
-                    $query = mysqli_query($con, "select ID from tblvehicle where date(InTime)=CURDATE();");
+                    $query = mysqli_query($con, "select ID from tblvehiclelogs where date(InTime)=CURDATE();");
                     $count_today_vehentries = mysqli_num_rows($query);
                     ?>
                     <div class="col-lg-3 col-md-6">
@@ -117,7 +117,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                     <div class="col-lg-3 col-md-6">
                         <?php
                         //Yesterdays Vehicle Entrie
-                        $query1 = mysqli_query($con, "select ID from tblvehicle where date(InTime)=CURDATE()-1;");
+                        $query1 = mysqli_query($con, "select ID from tblvehiclelogs where date(InTime)=CURDATE()-1;");
                         $count_yesterday_vehentries = mysqli_num_rows($query1);
                         ?>
                         <div class="card">
@@ -140,7 +140,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                     <div class="col-lg-3 col-md-6">
                         <?php
                         //Last Sevendays Vehicle Entries
-                        $query2 = mysqli_query($con, "select ID from tblvehicle where date(InTime)>=(DATE(NOW()) - INTERVAL 7 DAY);");
+                        $query2 = mysqli_query($con, "select ID from tblvehiclelogs where date(InTime)>=(DATE(NOW()) - INTERVAL 7 DAY);");
                         $count_lastsevendays_vehentries = mysqli_num_rows($query2);
                         ?>
                         <div class="card">
@@ -163,7 +163,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                     <div class="col-lg-3 col-md-6">
                         <?php
                         //Total Vehicle Entries
-                        $query3 = mysqli_query($con, "select ID from tblvehicle");
+                        $query3 = mysqli_query($con, "select ID from tblvehiclelogs");
                         $count_total_vehentries = mysqli_num_rows($query3);
                         ?>
                         <div class="card">

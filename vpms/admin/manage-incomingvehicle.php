@@ -8,7 +8,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
     // For deleting    
     if ($_GET['del']) {
         $catid = $_GET['del'];
-        mysqli_query($con, "delete from tblvehicle where ID ='$catid'");
+        mysqli_query($con, "DELETE FROM tblvehiclelogs where ID ='$catid'");
         echo "<script>alert('Data Deleted');</script>";
         echo "<script>window.location.href='manage-incomingvehicle.php'</script>";
     }
@@ -90,8 +90,6 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                                         <tr>
                                         <tr>
                                             <th>S.NO</th>
-
-
                                             <th>Parking Number</th>
                                             <th>Owner Name</th>
                                             <th>Vehicle Reg Number</th>
@@ -101,7 +99,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                                         </tr>
                                     </thead>
                                     <?php
-                                    $ret = mysqli_query($con, "select *from   tblvehicle where Status='In'");
+                                    $ret = mysqli_query($con, "select *from tblvehiclelogs where Status='In'");
                                     $cnt = 1;
                                     while ($row = mysqli_fetch_array($ret)) {
                                     ?>

@@ -101,7 +101,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                                         </tr>
                                     </thead>
                                     <?php
-                                    $ret = mysqli_query($con, "select *from   tblvehicle where Status='Out'");
+                                    $ret = mysqli_query($con, "select * from tblvehiclelogs where Status='Out'");
                                     $cnt = 1;
                                     while ($row = mysqli_fetch_array($ret)) {
 

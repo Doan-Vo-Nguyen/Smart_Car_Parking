@@ -28,18 +28,35 @@ def create_connection():
         print(f"Error: {e}")
         return None
 
-# Insert detected license plate into MySQL
 def insert_license_plate(connection, license_plate, timestamp):
     try:
         cursor = connection.cursor()
-        query = """INSERT INTO tblvehiclelogs (RegistrationNumber, Intime, Status) VALUES (%s, %s, "In")"""
-        cursor.execute(query, (license_plate, timestamp))
-        connection.commit()
-        print(f"License Plate '{license_plate}' inserted into MySQL database.")
+        
+        # Truy vấn vehicleID từ tblvehicle
+        vehicle_query = """SELECT ID FROM tblvehicle WHERE RegistrationNumber = %s"""
+        cursor.execute(vehicle_query, (license_plate,))
+        result = cursor.fetchone()
+        
+        if result:
+            vehicle_id = result[0]
+            
+            # Chèn dữ liệu vào tblvehiclelogs
+            insert_query = """
+                INSERT INTO tblvehiclelogs (VehicleID, RegistrationNumber, Intime, Status)
+                VALUES (%s, %s, %s, "In")
+            """
+            cursor.execute(insert_query, (vehicle_id, license_plate, timestamp))
+            connection.commit()
+            print(f"License Plate '{license_plate}' with VehicleID '{vehicle_id}' inserted into MySQL database.")
+        else:
+            print(f"License Plate '{license_plate}' not found in tblvehicle.")
+    
     except Error as e:
         print(f"Error inserting data: {e}")
+    
     finally:
         cursor.close()
+
 
 # Check out a vehicle by updating status to "Out" and recording checkout time
 def checkout_license_plate(connection, license_plate, timestamp):

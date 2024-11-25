@@ -12,8 +12,6 @@
                         <div class="form-inline">
                            
                         </div>
-
-                     
                     </div>
 
                     <div class="user-area dropdown float-right">

@@ -2,29 +2,30 @@
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
-error_reporting(0);
 
-if(isset($_POST['submit']))
-  {
-    $contactno=$_SESSION['contactno'];
-    $email=$_SESSION['email'];
-    $password=md5($_POST['newpassword']);
+if (isset($_POST['submit'])) {
+    $contactno = $_SESSION['contactno'];
+    $email = $_SESSION['email'];
+    $password = md5($_POST['newpassword']);
 
-        $query=mysqli_query($con,"update tblregusers set Password='$password'  where  Email='$email' && MobileNumber='$contactno' ");
-   if($query)
-   {
-echo "<script>alert('Password successfully changed');</script>";
-session_destroy();
-   }
-  
-  }
-  ?>
+    $query = mysqli_query($con, "UPDATE tblregusers SET Password= '$password' WHERE Email='$email'");
+    if ($query) {
+        echo "<script>alert('Password successfully changed');</script>";
+        session_destroy(); // Xóa session để tránh sử dụng lại thông tin cũ
+        header('location:login.php'); // Chuyển hướng đến trang đăng nhập
+        exit();
+    } else {
+        echo "<script>alert('Something went wrong. Please try again.');</script>";
+    }
+}
+?>
 <!doctype html>
- <html class="no-js" lang="">
+<html class="no-js" lang="">
+
 <head>
-    
+
     <title>VPMS-Reset Page</title>
-   
+
 
     <link rel="apple-touch-icon" href="https://i.imgur.com/QRAUqs9.png">
     <link rel="shortcut icon" href="https://i.imgur.com/QRAUqs9.png">
@@ -39,20 +40,18 @@ session_destroy();
     <link rel="stylesheet" href="../admin/assets/css/style.css">
 
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
-<script type="text/javascript">
-function checkpass()
-{
-if(document.changepassword.newpassword.value!=document.changepassword.confirmpassword.value)
-{
-alert('New Password and Confirm Password field does not match');
-document.changepassword.confirmpassword.focus();
-return false;
-}
-return true;
-} 
-
-</script>
+    <script type="text/javascript">
+        function checkpass() {
+            if (document.changepassword.newpassword.value != document.changepassword.confirmpassword.value) {
+                alert('New Password and Confirm Password field does not match');
+                document.changepassword.confirmpassword.focus();
+                return false;
+            }
+            return true;
+        }
+    </script>
 </head>
+
 <body class="bg-dark">
 
     <div class="sufee-login d-flex align-content-center flex-wrap">
@@ -60,32 +59,32 @@ return true;
             <div class="login-content">
                 <div class="login-logo">
                     <a href="index.php">
-                       <h2 style="color: green">Vehicle Parking Management System</h2>
+                        <h2 style="color: green">Vehicle Parking Management System</h2>
                     </a>
                 </div>
                 <div class="login-form">
                     <form action="" method="post" name="changepassword" onsubmit="return checkpass();">
-                         <p style="font-size:16px; color:red" align="center"> <?php if($msg){
-    echo $msg;
-  }  ?> </p>
+                        <p style="font-size:16px; color:red" align="center"> <?php if ($msg) {
+                                                                                    echo $msg;
+                                                                                }  ?> </p>
                         <div class="form-group">
                             <label>New Password</label>
-                           <input type="password" class="form-control" name="newpassword" placeholder="New Password" required="true">
+                            <input type="password" class="form-control" name="newpassword" placeholder="New Password" required="true">
                         </div>
                         <div class="form-group">
                             <label>Confirm Password</label>
                             <input type="password" class="form-control" name="confirmpassword" placeholder="Confirm Password" required="true">
                         </div>
                         <div class="checkbox">
-                            
+
                             <label class="pull-right">
                                 <a href="login.php">Signin</a>
                             </label>
 
                         </div>
                         <button type="submit" name="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Reset</button>
-                       
-                       
+
+
                     </form>
                 </div>
             </div>
@@ -99,4 +98,5 @@ return true;
     <script src="../admin/assets/js/main.js"></script>
 
 </body>
+
 </html>

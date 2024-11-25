@@ -10,7 +10,7 @@ if(isset($_POST['submit']))
   {
     $catname=$_POST['catename'];
      
-    $query=mysqli_query($con, "insert into  tblcategory(VehicleCat) value('$catname')");
+    $query=mysqli_query($con, "insert into tblcategory(VehicleCat) value('$catname')");
     if ($query) {
     echo "<script>alert('Category added successfully');</script>";
 echo "<script>window.location.href='manage-category.php'</script>";

@@ -2,43 +2,45 @@
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
-if (strlen($_SESSION['vpmsaid']==0)) {
-  header('location:logout.php');
-  } else{
-  ?>
-<!doctype html>
+if (strlen($_SESSION['vpmsaid'] == 0)) {
+    header('location:logout.php');
+} else {
+?>
+    <!doctype html>
 
-<html class="no-js" lang="">
-<head>
-   
-    <title>VPMS - Reports</title>
-   
+    <html class="no-js" lang="">
 
-    <link rel="apple-touch-icon" href="https://i.imgur.com/QRAUqs9.png">
-    <link rel="shortcut icon" href="https://i.imgur.com/QRAUqs9.png">
+    <head>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pixeden-stroke-7-icon@1.2.3/pe-icon-7-stroke/dist/pe-icon-7-stroke.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.0/css/flag-icon.min.css">
-    <link rel="stylesheet" href="assets/css/cs-skin-elastic.css">
-    <link rel="stylesheet" href="assets/css/style.css">
+        <title>VPMS - Reports</title>
 
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
 
-</head>
-<body>
-    <!-- Left Panel -->
+        <link rel="apple-touch-icon" href="https://i.imgur.com/QRAUqs9.png">
+        <link rel="shortcut icon" href="https://i.imgur.com/QRAUqs9.png">
 
-  <?php include_once('includes/sidebar.php');?>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pixeden-stroke-7-icon@1.2.3/pe-icon-7-stroke/dist/pe-icon-7-stroke.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.0/css/flag-icon.min.css">
+        <link rel="stylesheet" href="assets/css/cs-skin-elastic.css">
+        <link rel="stylesheet" href="assets/css/style.css">
 
-    <!-- Left Panel -->
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
 
-    <!-- Right Panel -->
+    </head>
 
-     <?php include_once('includes/header.php');?>
+    <body>
+        <!-- Left Panel -->
+
+        <?php include_once('includes/sidebar.php'); ?>
+
+        <!-- Left Panel -->
+
+        <!-- Right Panel -->
+
+        <?php include_once('includes/header.php'); ?>
 
         <div class="breadcrumbs">
             <div class="breadcrumbs-inner">
@@ -68,81 +70,85 @@ if (strlen($_SESSION['vpmsaid']==0)) {
         <div class="content">
             <div class="animated fadeIn">
                 <div class="row">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <strong class="card-title">Between Date Reports</strong>
-                        </div>
-                        <div class="card-body">
-                            <?php
-$fdate=$_POST['fromdate'];
-$tdate=$_POST['todate'];
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <strong class="card-title">Between Date Reports</strong>
+                            </div>
+                            <div class="card-body">
+                                <?php
+                                $fdate = $_POST['fromdate'];
+                                $tdate = $_POST['todate'];
 
-?>
-<h5 align="center" style="color:blue">Report from <?php echo $fdate?> to <?php echo $tdate?></h5>
-                             <table class="table">
-                <thead>
+                                ?>
+                                <h5 align="center" style="color:blue">Report from <?php echo $fdate ?> to <?php echo $tdate ?></h5>
+                                <table class="table">
+                                    <thead>
                                         <tr>
-                                            <tr>
-                  <th>S.NO</th>
-            
-                 
-                    <th>Parking Number</th>
-                    <th>Owner Name</th>
-                    <th>Vehicle Reg Number</th>
-                   
-                          <th>Action</th>
-                </tr>
+                                        <tr>
+                                            <th>S.NO</th>
+
+
+                                            <th>Parking Number</th>
+                                            <th>Owner Name</th>
+                                            <th>Vehicle Reg Number</th>
+
+                                            <th>Action</th>
                                         </tr>
-                                        </thead>
-               <?php
-$ret=mysqli_query($con,"select *from   tblvehicle where date(InTime) between '$fdate' and '$tdate'");
-$cnt=1;
-while ($row=mysqli_fetch_array($ret)) {
+                                        </tr>
+                                    </thead>
+                                    <?php
+                                    $ret = mysqli_query($con, "SELECT tbvehlogs.ParkingNumber,
+                                        tbuser.FullName, tbvehlogs.RegistrationNumber, tbvehlogs.ID, tbvehlogs.Status
+                                        FROM tblvehiclelogs as tbvehlogs
+                                        JOIN tblvehicle as tbveh ON tbvehlogs.VehicleID=tbveh.ID
+                                        JOIN tblregusers as tbuser ON tbuser.ID=tbveh.OwnerID
+                                        JOIN tblcategory as tbcat ON tbcat.ID=tbveh.CategoryID
+                                        WHERE DATE(InTime) BETWEEN '$fdate' AND '$tdate'");
+                                    $cnt = 1;
+                                    while ($row = mysqli_fetch_array($ret)) {
+                                    ?>
+                                        <tr>
+                                            <td><?php echo $cnt; ?></td>
+                                            <td><?php echo $row['ParkingNumber']; ?></td>
+                                            <td><?php echo $row['FullName']; ?></td>
+                                            <td><?php echo $row['RegistrationNumber']; ?></td>
+                                            <td><?php if ($row['Status'] == "In") { ?>
+                                                   <td><a href="view-incomingvehicle-detail.php?viewid=<?php echo $row['ID']; ?>">View</a></td>
+                                                <?php } else { ?>
+                                                    <td><a href="view-outgoingvehicle-detail.php?viewid=<?php echo $row['ID']; ?>">View</a></td>
+                                                <?php }
+                                                ?></td>
+                                        </tr>
+                                    <?php
+                                        $cnt = $cnt + 1;
+                                    } ?>
+                                </table>
 
-?>
-              
-                <tr>
-                  <td><?php echo $cnt;?></td>
-            
-                 
-                  <td><?php  echo $row['ParkingNumber'];?></td>
-                  <td><?php  echo $row['OwnerName'];?></td>
-                  <td><?php  echo $row['RegistrationNumber'];?></td>
-                  
-                  <td><a href="view-incomingvehicle-detail.php?viewid=<?php echo $row['ID'];?>">View</a></td>
-                </tr>
-                <?php 
-$cnt=$cnt+1;
-}?>
-              </table>
-
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </div><!-- .animated -->
+        </div><!-- .content -->
+
+        <div class="clearfix"></div>
+
+        <?php include_once('includes/footer.php'); ?>
+
+        </div><!-- /#right-panel -->
+
+        <!-- Right Panel -->
+
+        <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery-match-height@0.7.2/dist/jquery.matchHeight.min.js"></script>
+        <script src="assets/js/main.js"></script>
 
 
+    </body>
 
-        </div>
-    </div><!-- .animated -->
-</div><!-- .content -->
-
-<div class="clearfix"></div>
-
-<?php include_once('includes/footer.php');?>
-
-</div><!-- /#right-panel -->
-
-<!-- Right Panel -->
-
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery-match-height@0.7.2/dist/jquery.matchHeight.min.js"></script>
-<script src="assets/js/main.js"></script>
-
-
-</body>
-</html>
+    </html>
 <?php }  ?>

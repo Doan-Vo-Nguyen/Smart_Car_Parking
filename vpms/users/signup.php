@@ -99,10 +99,6 @@ return true;
                             <input type="password" name="repeatpassword" placeholder="Enter repeat password" required="true" class="form-control">
                         </div>
                         <div class="checkbox">
-                            
-                            <label class="pull-right">
-                                <a href="forgot-password.php">Forgotten Password?</a>
-                            </label>
                             <label class="pull-left">
                                 <a href="login.php">Signin</a>
                             </label>

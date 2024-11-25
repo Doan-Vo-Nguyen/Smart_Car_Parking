@@ -6,7 +6,7 @@ if(isset($_POST['login']))
   {
     $emailcon=$_POST['emailcont'];
     $password=md5($_POST['password']);
-    $query=mysqli_query($con,"select ID,MobileNumber from tblregusers where  (Email='$emailcon' || MobileNumber='$emailcon') && Password='$password' ");
+    $query=mysqli_query($con,"SELECT ID,MobileNumber FROM tblregusers WHERE  (Email='$emailcon' || MobileNumber='$emailcon') && Password='$password' ");
     $ret=mysqli_fetch_array($query);
     if($ret>0){
       $_SESSION['vpmsuid']=$ret['ID'];
@@ -56,8 +56,8 @@ if(isset($_POST['login']))
                     <form method="post">
                          
                         <div class="form-group">
-                            <label>Registered Email or Contact Number</label>
-                           <input type="text" name="emailcont" required="true" placeholder="Registered Email or Contact Number" required="true" class="form-control">
+                            <label>Contact Number</label>
+                           <input type="text" name="emailcont" required="true" placeholder="Contact Number" required="true" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Password</label>

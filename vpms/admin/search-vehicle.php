@@ -86,7 +86,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
 
 
                                     <div class="row form-group">
-                                        <div class="col col-md-3"><label for="text-input" class=" form-control-label">Search By Parking Number/ Registration No</label></div>
+                                        <div class="col col-md-3"><label for="text-input" class=" form-control-label">Search By Registration No / CCCD / FullName</label></div>
                                         <div class="col-12 col-md-9"><input type="text" id="searchdata" name="searchdata" class="form-control" required="required" autofocus="autofocus"></div>
                                     </div>
 
@@ -121,7 +121,8 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                                         JOIN tblvehicle as tbveh ON tbvehlogs.VehicleID=tbveh.ID
                                         JOIN tblregusers as tbuser ON tbuser.ID=tbveh.OwnerID
                                         JOIN tblcategory as tbcat ON tbcat.ID=tbveh.CategoryID
-                                        WHERE tbvehlogs.RegistrationNumber like '$sdata%'");
+                                        WHERE tbvehlogs.RegistrationNumber like '$sdata%'
+                                        OR tbuser.FullName like '$sdata%' OR tbuser.CCCD like '$sdata%'");
                                         $num = mysqli_num_rows($ret);
                                         if ($num > 0) {
                                             $cnt = 1;

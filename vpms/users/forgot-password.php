@@ -3,24 +3,49 @@ session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
 
-if(isset($_POST['submit']))
-  {
-    $contactno=$_POST['contactno'];
-    $email=$_POST['email'];
+if (isset($_POST['submit'])) {
+    $email = $_POST['email'];
 
-        $query=mysqli_query($con,"select ID from tblregusers where  Email='$email' and MobileNumber='$contactno' ");
-    $ret=mysqli_fetch_array($query);
-    if($ret>0){
-      $_SESSION['contactno']=$contactno;
-      $_SESSION['email']=$email;
-     header('location:reset-password.php');
+    // Kiểm tra xem thông tin email có khớp không
+    $query = $con->prepare("SELECT ID FROM tblregusers WHERE Email = ?");
+    $query->bind_param("s", $email);
+    $query->execute();
+    $result = $query->get_result();
+    $ret = $result->fetch_assoc();
+
+    if ($ret) {
+        $userId = $ret['ID'];
+
+        // Tạo mã OTP ngẫu nhiên
+        $otp = rand(100000, 999999);
+
+        // Lưu OTP và thời gian tạo vào cơ sở dữ liệu
+        $expiryTime = date("Y-m-d H:i:s", strtotime("+5 minutes")); // OTP có hiệu lực 5 phút
+        $updateQuery = $con->prepare("UPDATE tblregusers SET OTP = ?, OTPExpiry = ? WHERE ID = ?");
+        $updateQuery->bind_param("ssi", $otp, $expiryTime, $userId);
+        if ($updateQuery->execute()) {
+            // Gửi OTP qua email
+            $to = $email;
+            $subject = "Your OTP Code";
+            $message = "Your OTP code is $otp. This code is valid for 5 minutes.";
+            $headers = 'From: vpms@example.com' . "\r\n" .
+                        'Reply-To: vpms@example.com' . "\r\n" .
+                        'X-Mailer: PHP/' . phpversion();
+
+            if (mail($to, $subject, $message, $headers)) {
+                header('location:verify-otp.php?userId=' . $userId);
+            } else {
+                echo "<script>alert('Failed to send OTP. Please try again.');</script>";
+            }
+        } else {
+            echo "<script>alert('Failed to update OTP. Please try again.');</script>";
+        }
+    } else {
+        echo "<script>alert('Invalid email. Please try again.');</script>";
     }
-    else{
-  
-      echo "<script>alert('Invalid Details. Please try again.');</script>";
-    }
-  }
-  ?>
+}
+?>
+
 <!doctype html>
  <html class="no-js" lang="">
 <head>
@@ -61,10 +86,6 @@ if(isset($_POST['submit']))
                             <label>Email</label>
                            <input type="text" class="form-control" name="email" placeholder="Email" autofocus required="true">
                         </div>
-                        <div class="form-group">
-                            <label>Mobile Number</label>
-                            <input type="text" class="form-control" name="contactno" placeholder="Mobile Number" required="true">
-                        </div>
                         <div class="checkbox">
                             
                             <label class="pull-right">
@@ -73,8 +94,6 @@ if(isset($_POST['submit']))
 
                         </div>
                         <button type="submit" name="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Reset</button>
-                       
-                       
                     </form>
                 </div>
             </div>

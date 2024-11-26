@@ -99,7 +99,14 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                                         </tr>
                                     </thead>
                                     <?php
-                                    $ret = mysqli_query($con, "select *from tblvehiclelogs where Status='In'");
+                                    $ret = mysqli_query($con, "SELECT tbvehlogs.ParkingNumber,
+                                                        tbuser.FullName,
+                                                        tbvehlogs.RegistrationNumber,
+                                                        tbvehlogs.ID
+                                                        FROM tblvehicle AS tbveh
+                                                        JOIN tblregusers as tbuser ON tbveh.OwnerID = tbuser.ID
+                                                        JOIN tblvehiclelogs AS tbvehlogs ON tbveh.ID = tbvehlogs.VehicleID
+                                                        WHERE tbvehlogs.Status = 'In'");
                                     $cnt = 1;
                                     while ($row = mysqli_fetch_array($ret)) {
                                     ?>
@@ -109,7 +116,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
 
 
                                             <td><?php echo $row['ParkingNumber']; ?></td>
-                                            <td><?php echo $row['OwnerName']; ?></td>
+                                            <td><?php echo $row['FullName']; ?></td>
                                             <td><?php echo $row['RegistrationNumber']; ?></td>
 
                                             <td><a href="view-incomingvehicle-detail.php?viewid=<?php echo $row['ID']; ?>" class="btn btn-primary">View</a>

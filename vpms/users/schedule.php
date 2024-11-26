@@ -83,11 +83,6 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
                             <div class="card-body">
                                 <form action="" method="post">
                                     <div class="form-group">
-                                        <label for="ownerName" class="form-control-label">Owner Name</label>
-                                        <input type="text" name="ownerName" id="ownerName" class="form-control" required>
-                                    </div>
-
-                                    <div class="form-group">
                                         <label for="vehicleCategory" class="form-control-label">Vehicle Category</label>
                                         <select name="vehicleCategory" id="vehicleCategory" class="form-control" required>
                                             <option value="">Select Category</option>
@@ -113,21 +108,19 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
                                 </form>
                                 <?php
                                 if (isset($_POST['submit'])) {
-                                    $ownerName = $_POST['ownerName'];
+                                    $uid = $_SESSION['vpmsuid'];
                                     $vehicleCategory = $_POST['vehicleCategory'];
                                     $registrationNumber = $_POST['registrationNumber'];
                                     $dateSchedule = $_POST['dateSchedule'];
-                                    $status = 'Pending'; // Default status
+                                    $status = 'Done'; // Default status
 
-                                    // Query to get the OwnerID from tblreguser by OwnerName
-                                    $queryOwner = mysqli_query($con, "SELECT ID FROM tblreguser WHERE FullName='$ownerName'");
-                                    $resultOwner = mysqli_fetch_array($queryOwner);
-                                    $ownerID = $resultOwner['ID'];
-
-                                    if ($ownerID) {
+                                    $queryCatID =  mysqli_query($con, "SELECT ID FROM tblcategory WHERE VehicleCat like '$vehicleCategory'");
+                                    $resultCatID = mysqli_fetch_array($queryCatID);
+                                    $catID = $resultCatID['ID'];
+                                    if ($catID > 0) {
                                         // Insert the new schedule into tblschedule
-                                        $queryInsert = "INSERT INTO tblschedule (OwnerID, VehicleCategory, RegistrationNumber, DateSchedule, Status) 
-                        VALUES ('$ownerID', '$vehicleCategory', '$registrationNumber', '$dateSchedule', '$status')";
+                                        $queryInsert = "INSERT INTO tblschedule (OwnerID, CategoryID, RegistrationNumber, DateSchedule, Status)
+                                         VALUES ('$uid', '$catID', '$registrationNumber', '$dateSchedule', '$status')";
 
                                         $insertResult = mysqli_query($con, $queryInsert);
 

@@ -90,18 +90,22 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                                         <tr>
                                         <tr>
                                             <th>S.NO</th>
-
-
                                             <th>Parking Number</th>
                                             <th>Owner Name</th>
                                             <th>Vehicle Reg Number</th>
-
                                             <th>Action</th>
                                         </tr>
                                         </tr>
                                     </thead>
                                     <?php
-                                    $ret = mysqli_query($con, "select * from tblvehiclelogs where Status='Out'");
+                                    $ret = mysqli_query($con, "SELECT tbvehlogs.ParkingNumber,
+                                                        tbuser.FullName,
+                                                        tbvehlogs.RegistrationNumber,
+                                                        tbvehlogs.ID
+                                                        FROM tblvehicle AS tbveh
+                                                        JOIN tblregusers as tbuser ON tbveh.OwnerID = tbuser.ID
+                                                        JOIN tblvehiclelogs AS tbvehlogs ON tbveh.ID = tbvehlogs.VehicleID
+                                                        WHERE tbvehlogs.Status='Out'");
                                     $cnt = 1;
                                     while ($row = mysqli_fetch_array($ret)) {
 
@@ -112,7 +116,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
 
 
                                             <td><?php echo $row['ParkingNumber']; ?></td>
-                                            <td><?php echo $row['OwnerName']; ?></td>
+                                            <td><?php echo $row['FullName']; ?></td>
                                             <td><?php echo $row['RegistrationNumber']; ?></td>
 
                                             <td><a href="view-outgoingvehicle-detail.php?viewid=<?php echo $row['ID']; ?>" class="btn btn-primary">View</a>

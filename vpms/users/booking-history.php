@@ -2,17 +2,18 @@
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
-if (strlen($_SESSION['vpmsaid'] == 0)) {
+if (strlen($_SESSION['vpmsuid'] == 0)) {
     header('location:logout.php');
 } else {
 
-    // For deleting
-    if ($_GET['del']) {
-        $catid = $_GET['del'];
-        mysqli_query($con, "DELETE FROM tblcategory WHERE ID ='$catid'");
-        echo "<script>alert('Data Deleted');</script>";
-        echo "<script>window.location.href='manage-category.php'</script>";
-    }
+// For deleting
+if ($_GET['del']) {
+    $scheid = $_GET['del'];
+    mysqli_query($con, "DELETE FROM tblschedule WHERE ID ='$scheid'");
+    echo "<script>alert('Schedule Deleted');</script>";
+    mysqli_query($con, "UPDATE tblcategory SET Status = Canceled WHERE ID ='$scheid'");
+    echo "<script>window.location.href='booking-history.php'</script>";
+}
 
 ?>
     <!doctype html>
@@ -20,20 +21,17 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
     <html class="no-js" lang="">
 
     <head>
-
-        <title>VPMS - Manage Category</title>
-
-
-
+        <title>VPMS - View Booking History</title>
+        <link rel="apple-touch-icon" href="https://i.imgur.com/QRAUqs9.png">
+        <link rel="shortcut icon" href="https://i.imgur.com/QRAUqs9.png">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pixeden-stroke-7-icon@1.2.3/pe-icon-7-stroke/dist/pe-icon-7-stroke.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.0/css/flag-icon.min.css">
-        <link rel="stylesheet" href="assets/css/cs-skin-elastic.css">
-        <link rel="stylesheet" href="assets/css/style.css">
-
+        <link rel="stylesheet" href="../admin/assets/css/cs-skin-elastic.css">
+        <link rel="stylesheet" href="../admin/assets/css/style.css">
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
 
     </head>
@@ -64,8 +62,8 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                             <div class="page-title">
                                 <ol class="breadcrumb text-right">
                                     <li><a href="dashboard.php">Dashboard</a></li>
-                                    <li><a href="manage-category.php">Category</a></li>
-                                    <li class="active">Manage Category</li>
+                                    <li><a href="booking-history.php">View Booking History</a></li>
+                                    <li class="active">View Booking History</li>
                                 </ol>
                             </div>
                         </div>
@@ -77,13 +75,10 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
         <div class="content">
             <div class="animated fadeIn">
                 <div class="row">
-
-
-
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-header">
-                                <strong class="card-title">Manage Category</strong>
+                                <strong class="card-title">View Booking History</strong>
                             </div>
                             <div class="card-body">
                                 <table class="table">
@@ -91,42 +86,45 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
                                         <tr>
                                         <tr>
                                             <th>S.NO</th>
-
-
-                                            <th>Category</th>
-
+                                            <th>Owner Name</th>
+                                            <th>Vehicle Category</th>
+                                            <th>Vehicle Reg Number</th>
+                                            <th>Date Booking</th>
                                             <th>Action</th>
                                         </tr>
                                         </tr>
                                     </thead>
                                     <?php
-                                    $ret = mysqli_query($con, "select *from  tblcategory");
+                                    $uid = $_SESSION['vpmsuid'];
+                                    $ret = mysqli_query($con, "SELECT
+                                                        tbuser.FullName,
+                                                        tbcat.VehicleCat,
+                                                        tbsche.RegistrationNumber,
+                                                        tbsche.DateSchedule,
+                                                        tbsche.ID
+                                                        FROM tblschedule AS tbsche
+                                                        JOIN tblregusers as tbuser ON tbsche.OwnerID = tbuser.ID
+                                                        JOIN tblcategory AS tbcat ON tbcat.ID = tbsche.CategoryID
+                                                        WHERE tbsche.OwnerID = '$uid'");
                                     $cnt = 1;
                                     while ($row = mysqli_fetch_array($ret)) {
-
                                     ?>
-
                                         <tr>
                                             <td><?php echo $cnt; ?></td>
-
-
+                                            <td><?php echo $row['FullName']; ?></td>
                                             <td><?php echo $row['VehicleCat']; ?></td>
-
-                                            <td><a href="edit-category.php?editid=<?php echo $row['ID']; ?>" class="btn btn-primary">Edit</a>
-                                                <a href="manage-category.php?del=<?php echo $row['ID']; ?>" class="btn btn-danger" onClick="return confirm('Are you sure you want to delete?')">Delete</a>
+                                            <td><?php echo $row['RegistrationNumber']; ?></td>
+                                            <td><?php echo $row['DateSchedule']; ?></td>
+                                            <td><a href="booking-history.php?del=<?php echo $row['ID']; ?>" class="btn btn-danger" onClick="return confirm('Are you sure you want to cancle this schedule?')">Cancel</a>
                                             </td>
                                         </tr>
                                     <?php
                                         $cnt = $cnt + 1;
                                     } ?>
                                 </table>
-
                             </div>
                         </div>
                     </div>
-
-
-
                 </div>
             </div><!-- .animated -->
         </div><!-- .content -->
@@ -144,7 +142,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/jquery-match-height@0.7.2/dist/jquery.matchHeight.min.js"></script>
-        <script src="assets/js/main.js"></script>
+        <script src="../admin/assets/js/main.js"></script>
 
 
     </body>

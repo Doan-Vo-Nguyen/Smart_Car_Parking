@@ -65,7 +65,6 @@ if (isset($_POST['submit'])) {
                         <h2 style="color: #fff">VPMS!! Create Your account</h2>
                     </a>
                 </div>
-
                 <div class="login-form">
                     <form method="post" onsubmit="return checkpass();">
 
@@ -101,7 +100,6 @@ if (isset($_POST['submit'])) {
                             <label class="pull-left">
                                 <a href="login.php">Signin</a>
                             </label>
-
                         </div>
                         <button type="submit" name="submit" class="btn btn-success btn-flat m-b-30 m-t-30">REGISTER</button>
                     </form>

@@ -13,7 +13,13 @@
                      </ul>
                  </li>
                  <li>
-                     <a href="schedule.php"><i class="menu-icon ti-calendar"></i>Booking</a>
+                     <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon ti-calendar"></i>Schedule</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="menu-icon fa fa-th"></i><a href="booking-history.php">View Booking History</a></li>
+                            <li><i class="menu-icon fa fa-th"></i><a href="schedule.php">Booking</a></li>
+                        </ul>
+                    </li>
                  </li>
              </ul>
          </div><!-- /.navbar-collapse -->

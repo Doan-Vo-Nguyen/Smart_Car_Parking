@@ -60,6 +60,7 @@ def insert_license_plate(connection, license_plate, timestamp):
 
 # Check out a vehicle by updating status to "Out" and recording checkout time
 def checkout_license_plate(connection, license_plate, timestamp):
+    fee = 2000
     try:
         cursor = connection.cursor()
         # Check if the vehicle is already "In"
@@ -69,8 +70,8 @@ def checkout_license_plate(connection, license_plate, timestamp):
 
         if result:
             # Update the status to "Out" with checkout time
-            update_query = """UPDATE tblvehiclelogs SET Outtime = %s, Status = "Out" WHERE RegistrationNumber = %s AND Status = "In" ORDER BY Intime DESC LIMIT 1"""
-            cursor.execute(update_query, (timestamp, license_plate))
+            update_query = """UPDATE tblvehiclelogs SET Outtime = %s, Status = "Out", ParkingCharge = %s WHERE RegistrationNumber = %s AND Status = "In" ORDER BY Intime DESC LIMIT 1"""
+            cursor.execute(update_query, (timestamp, fee, license_plate))
             connection.commit()
             print(f"License Plate '{license_plate}' checked out and updated in MySQL database.")
         else:

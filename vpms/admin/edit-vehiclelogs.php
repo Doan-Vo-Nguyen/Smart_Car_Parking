@@ -2,18 +2,20 @@
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
-if (strlen($_SESSION['vpmsuid'] == 0)) {
+if (strlen($_SESSION['vpmsaid'] == 0)) {
     header('location:logout.php');
 } else {
+
     if (isset($_POST['submit'])) {
-        $uid = $_SESSION['vpmsuid'];
-        $fname = $_POST['fullname'];
-        $query = mysqli_query($con, "UPDATE tblregusers SET FullName='$fname' WHERE ID='$uid'");
+        $eid = $_GET['editid'];
+        $regnum = $_POST['regnum'];
+        $query = mysqli_query($con, "UPDATE tblvehiclelogs SET RegistrationNumber='$regnum' WHERE ID='$eid'");
         if ($query) {
-            echo '<script>alert("Profile updated successully.")</script>';
-            echo '<script>window.location.href=profile.php</script>';
+
+            echo "<script>alert('Registration Number updated for logs completed');</script>";
         } else {
-            echo '<script>alert("Something Went Wrong. Please try again.")</script>';
+
+            echo "<script>alert('Something Went Wrong. Please try again');</script>";
         }
     }
 ?>
@@ -22,7 +24,7 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
 
     <head>
 
-        <title>VPMS - User Profile</title>
+        <title>VPMS - Manage Category</title>
 
 
         <link rel="apple-touch-icon" href="https://i.imgur.com/QRAUqs9.png">
@@ -34,8 +36,8 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pixeden-stroke-7-icon@1.2.3/pe-icon-7-stroke/dist/pe-icon-7-stroke.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.0/css/flag-icon.min.css">
-        <link rel="stylesheet" href="../admin/assets/css/cs-skin-elastic.css">
-        <link rel="stylesheet" href="../admin/assets/css/style.css">
+        <link rel="stylesheet" href="assets/css/cs-skin-elastic.css">
+        <link rel="stylesheet" href="assets/css/style.css">
 
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
 
@@ -64,8 +66,8 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
                             <div class="page-title">
                                 <ol class="breadcrumb text-right">
                                     <li><a href="dashboard.php">Dashboard</a></li>
-                                    <li><a href="profile.php">Profile</a></li>
-                                    <li class="active">User Profile</li>
+                                    <li><a href="manage-category.php">Category</a></li>
+                                    <li class="active">Update Category</li>
                                 </ol>
                             </div>
                         </div>
@@ -92,35 +94,25 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-header">
-                                <strong>User </strong> Profile
+                                <strong>Update </strong> Vehicle Logs
                             </div>
                             <div class="card-body card-block">
                                 <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
 
+
                                     <?php
-                                    $uid = $_SESSION['vpmsuid'];
-                                    $ret = mysqli_query($con, "select * from tblregusers where ID='$uid'");
+                                    $eid = $_GET['editid'];
+                                    $ret = mysqli_query($con, "SELECT * FROM tblvehiclelogs WHERE ID = '$eid'");
                                     $cnt = 1;
                                     while ($row = mysqli_fetch_array($ret)) {
                                     ?>
                                         <div class="row form-group">
-                                            <div class="col col-md-3"><label for="email-input" class=" form-control-label">Full Name</label></div>
-                                            <div class="col-12 col-md-9"><input type="text" name="fullname" required="true" class="form-control" value="<?php echo $row['FullName']; ?>"></div>
-                                        </div>
-                                        <div class="row form-group">
-                                            <div class="col col-md-3"><label for="password-input" class=" form-control-label">Contact Number</label></div>
-                                            <div class="col-12 col-md-9"> <input type="text" name="mobilenumber" maxlength="10" pattern="[0-9]{10}" readonly="true" class="form-control" value="<?php echo $row['MobileNumber']; ?>"></div>
-                                        </div>
-                                        <div class="row form-group">
-                                            <div class="col col-md-3"><label for="disabled-input" class=" form-control-label">Email address</label></div>
-                                            <div class="col-12 col-md-9"><input type="email" name="email" required="true" class="form-control" value="<?php echo $row['Email']; ?>" readonly="true"></div>
+                                            <div class="col col-md-3"><label for="text-input" class=" form-control-label">RegistrationNumber</label></div>
+                                            <div class="col-12 col-md-9"><input type="text" id="catename" name="regnum" class="form-control" placeholder="Registration Number" required="true" value="<?php echo $row['RegistrationNumber']; ?>"></div>
                                         </div>
 
-                                        <div class="row form-group">
-                                            <div class="col col-md-3"><label for="disabled-input" class=" form-control-label">Registration</label></div>
-                                            <div class="col-12 col-md-9"><input type="text" name="regdate" value="<?php echo $row['RegDate']; ?>" readonly="true" class="form-control"></div>
-                                        </div>
                                     <?php } ?>
+
                                     <p style="text-align: center;"> <button type="submit" class="btn btn-primary btn-sm" name="submit">Update</button></p>
                                 </form>
                             </div>
@@ -155,7 +147,7 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/jquery-match-height@0.7.2/dist/jquery.matchHeight.min.js"></script>
-        <script src="../admin/assets/js/main.js"></script>
+        <script src="assets/js/main.js"></script>
 
 
     </body>

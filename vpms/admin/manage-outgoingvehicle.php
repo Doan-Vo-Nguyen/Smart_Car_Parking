@@ -121,6 +121,7 @@ if (strlen($_SESSION['vpmsaid'] == 0)) {
 
                                             <td><a href="view-outgoingvehicle-detail.php?viewid=<?php echo $row['ID']; ?>" class="btn btn-primary">View</a>
                                                 <a href="print.php?vid=<?php echo $row['ID']; ?>" style="cursor:pointer" target="_blank" class="btn btn-warning">Print</a>
+                                                <a href="edit-vehiclelogs.php?editid=<?php echo $row['ID']; ?>" style="cursor:pointer" target="_blank" class="btn btn-secondary">Update</a>
                                                 <a href="manage-outgoingvehicle.php?del=<?php echo $row['ID']; ?>" class="btn btn-danger" onClick="return confirm('Are you sure you want to delete?')">Delete</a>
 
                                             </td>

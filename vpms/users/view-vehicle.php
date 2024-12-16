@@ -73,13 +73,10 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
         <div class="content">
             <div class="animated fadeIn">
                 <div class="row">
-
-
-
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-header">
-                                <strong class="card-title">View Vehicle Parking Details (on the basis of Registered Mobile No)</strong>
+                                <strong class="card-title">View Vehicle Parking History Details (on the basis of Registered Mobile No)</strong>
                             </div>
                             <div class="card-body">
                                 <table class="table">
@@ -87,12 +84,9 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
                                         <tr>
                                         <tr>
                                             <th>S.NO</th>
-
-
                                             <th>Parking Number</th>
                                             <th>Owner Name</th>
                                             <th>Vehicle Reg Number</th>
-
                                             <th>Action</th>
                                         </tr>
                                         </tr>

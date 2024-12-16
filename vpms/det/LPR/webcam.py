@@ -23,10 +23,10 @@ def create_connection():
     try:
         connection = mysql.connector.connect(
             host='localhost',
-            port=3307,
-            user='root',
-            password='',
-            database='car_parking'
+            port='DB_PORT',
+            user='DB_USER',
+            password='DB_PASSWORD',
+            database='DB_NAME'
         )
         if connection.is_connected():
             print("Connected to MySQL database")
@@ -107,6 +107,16 @@ new_frame_time = 0
 detection_delay = 5  # seconds
 last_detection_time = 0
 
+# Maintain a record of detected license plates
+recent_plates = {}
+
+def clean_up_recent_plates():
+    # Remove entries older than the detection delay
+    current_time = time.time()
+    for plate in list(recent_plates.keys()):
+        if current_time - recent_plates[plate] > detection_delay:
+            del recent_plates[plate]
+
 # Initialize video capture
 vid = cv2.VideoCapture(1)
 
@@ -139,6 +149,11 @@ while True:
                     break
 
             if lp != "unknown":
+                if lp in recent_plates:
+                    print(f"Ignoring license plate '{lp}' as it is still in the detection area.")
+                    continue
+
+                recent_plates[lp] = current_time
                 timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
                 image_filename = f"detected_plate_{timestamp}.jpg"
                 cv2.imwrite(image_filename, frame)
@@ -159,6 +174,7 @@ while True:
                 last_detection_time = current_time
                 break
 
+    clean_up_recent_plates()
     new_frame_time = time.time()
     fps = 1 / (new_frame_time - prev_frame_time) if prev_frame_time != 0 else 0
     prev_frame_time = new_frame_time

@@ -8,18 +8,18 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
     // Lấy ID của lịch đặt chỗ để chỉnh sửa
     if (isset($_GET['edit_id'])) {
         $edit_id = intval($_GET['edit_id']);
-        $query = mysqli_query($con, "SELECT ts.ID, ts.CategoryID, tc.VehicleCat, ts.RegistrationNumber, ts.DateSchedule, ts.Status 
+        $query = mysqli_query($con, "SELECT ts.ID, ts.CategoryID, tc.VehicleCat, ts.RegistrationNumber, ts.DateSchedule,
                                      FROM tblschedule ts
                                      JOIN tblcategory tc ON ts.CategoryID = tc.ID
                                      WHERE ts.ID = '$edit_id'");
         $row = mysqli_fetch_assoc($query);
         if (!$row) {
             echo "<script>alert('Invalid Booking ID.');</script>";
-            echo "<script>window.location.href='history_booking.php';</script>";
+            echo "<script>window.location.href='history-booking.php';</script>";
         }
     } else {
         echo "<script>alert('No Booking ID provided.');</script>";
-        echo "<script>window.location.href='history_booking.php';</script>";
+        echo "<script>window.location.href='history-booking.php';</script>";
     }
 
     // Cập nhật thông tin lịch đặt chỗ
@@ -27,13 +27,13 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
         $categoryID = intval($_POST['category']);
         $registrationNumber = mysqli_real_escape_string($con, $_POST['registrationNumber']);
         $dateSchedule = mysqli_real_escape_string($con, $_POST['dateSchedule']);
-        $status = mysqli_real_escape_string($con, $_POST['status']);
+        $dateOut = mysqli_real_escape_string($con, $_POST['dateOut']);
 
-        $updateQuery = "UPDATE tblschedule SET CategoryID='$categoryID', RegistrationNumber='$registrationNumber', DateSchedule='$dateSchedule', Status='$status' WHERE ID='$edit_id'";
+        $updateQuery = "UPDATE tblschedule SET CategoryID='$categoryID', RegistrationNumber='$registrationNumber', DateSchedule='$dateSchedule',ExpectDateOut='$dateOut' WHERE ID='$edit_id'";
 
         if (mysqli_query($con, $updateQuery)) {
             echo "<script>alert('Booking updated successfully.');</script>";
-            echo "<script>window.location.href='history_booking.php';</script>";
+            echo "<script>window.location.href='history-booking.php';</script>";
         } else {
             echo "<script>alert('Failed to update booking. Please try again.');</script>";
         }
@@ -74,14 +74,9 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
             </div>
 
             <div class="form-group">
-                <label for="status">Status</label>
-                <select name="status" id="status" class="form-control" required>
-                    <option value="Pending" <?php if ($row['Status'] == 'Pending') echo 'selected'; ?>>Pending</option>
-                    <option value="Completed" <?php if ($row['Status'] == 'Completed') echo 'selected'; ?>>Completed</option>
-                    <option value="Canceled" <?php if ($row['Status'] == 'Canceled') echo 'selected'; ?>>Canceled</option>
-                </select>
+                <label for="dateOut">Date Out</label>
+                <input type="date" name="dateOut" id="dateOut" class="form-control" value="<?php echo htmlentities($row['ExpectDateOut']); ?>" required>
             </div>
-
             <button type="submit" name="update" class="btn btn-primary">Update Booking</button>
             <a href="history_booking.php" class="btn btn-secondary">Cancel</a>
         </form>

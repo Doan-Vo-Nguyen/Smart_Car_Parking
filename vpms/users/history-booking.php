@@ -13,10 +13,11 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
     /// Base query for filtering
     $queryBase = "
 SELECT tblregusers.FullName, tblschedule.ID, tblcategory.VehicleCat, tblschedule.RegistrationNumber, 
-       tblschedule.DateSchedule, tblschedule.ExpectDateOut, tblschedule.Status
+       tblschedule.DateSchedule, tblschedule.ExpectDateOut, tblschedule.Status, tblregusers.FullName AS ActionBy
 FROM tblschedule
 JOIN tblcategory ON tblschedule.CategoryID = tblcategory.ID
 JOIN tblregusers ON tblschedule.OwnerID = tblregusers.ID
+JOIN tblschedule_unregistered ON tblschedule_unregistered.ActionBy = tblregusers.ID
 WHERE tblschedule.OwnerID = '$uid'
 ";
 
@@ -28,18 +29,20 @@ WHERE tblschedule.OwnerID = '$uid'
     // Add data from tblschedule_unregistered
     $queryBase .= "
 UNION
-SELECT tblschedule_unregistered.ID, tblschedule_unregistered.OwnerName AS FullName,
-        tblschedule_unregistered.VehicleCategory AS VehicleCat,
-       tblschedule_unregistered.RegistrationNumber, tblschedule_unregistered.DateSchedule, 
-       tblschedule_unregistered.ExpectDateOut, tblschedule_unregistered.Status
+SELECT tblschedule_unregistered.OwnerName AS FullName,
+        tblschedule_unregistered.ID,
+         tblcategory.VehicleCat,
+       tblschedule_unregistered.RegistrationNumber, tblschedule_unregistered.DateSchedule,
+       tblschedule_unregistered.ExpectDateOut, tblschedule_unregistered.Status,
+       tblregusers.FullName AS ActionBy
 FROM tblschedule_unregistered
-WHERE tblschedule_unregistered.CCCD IN
-    (SELECT CCCD FROM tblregusers WHERE ID = '$uid')
+JOIN tblcategory ON tblschedule_unregistered.VehicleCategory = tblcategory.ID
+JOIN tblregusers ON tblschedule_unregistered.ActionBy = tblregusers.ID
 ";
 
     // Add status filter to tblschedule_unregistered query
     if ($statusFilter !== 'All') {
-        $queryBase .= " AND tblschedule_unregistered.Status = '$statusFilter'";
+        $queryBase .= " WHERE tblschedule_unregistered.Status = '$statusFilter'";
     }
 
     // Order results
@@ -132,6 +135,7 @@ WHERE tblschedule_unregistered.CCCD IN
                                             <th>Expected Date Out</th>
                                             <th>Status</th>
                                             <th>Actions</th>
+                                            <th>By</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -154,6 +158,7 @@ WHERE tblschedule_unregistered.CCCD IN
                                                         <button type="submit" name="delete" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this booking?');">Delete</button>
                                                     </form>
                                                 </td>
+                                                <td><?php echo $row['ActionBy']; ?></td>
                                             </tr>
                                         <?php
                                             $cnt++;

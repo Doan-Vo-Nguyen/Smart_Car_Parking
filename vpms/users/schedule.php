@@ -146,24 +146,24 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
 
                                 <?php
                                 // Handle form submissions
-                                if (isset($_POST['submitRegistered'])) {
-                                    $ownerName = $_POST['ownerName'];
-                                    $cccd = $_POST['cccd'];
-                                    $vehicleCategory = $_POST['vehicleCategory'];
+                                if (isset($_POST['submitRegistered']) || isset($_POST['submitUnregistered'])) {
                                     $registrationNumber = $_POST['registrationNumber'];
                                     $dateSchedule = $_POST['dateSchedule'];
                                     $dateOut = $_POST['dateOut'];
                                     $status = 'Booked'; // Default status
 
                                     // Unregistered
+                                    $ownerName = $_POST['ownerNameUnregistered'];
+                                    $cccd = $_POST['cccdUnregistered'];
+                                    $vehicleCategory = $_POST['vehicleCategoryUnregistered'];
                                     $registrationNumberUnregistered = $_POST["registrationNumberUnregistered"];
                                     $phoneUnregistered = $_POST["phoneNumberUnregistered"];
                                     $dateScheduleUnregistered = $_POST["dateScheduleUnregistered"];
                                     $dateOutUnregistered = $_POST["dateOutUnregistered"];
 
 
-                                    // Take the ID of the Categoty
-                                    $queryCatID =  mysqli_query($con, "SELECT tbcat.ID, tbsche.RegistrationNumber FROM tblcategory as tbcat 
+                                    // Take the ID of the Categoty if user have sign up
+                                    $queryCatID =  mysqli_query($con, "SELECT tbcat.ID, tbsche.RegistrationNumber FROM tblcategory as tbcat
                                     JOIN tblvehicle as tbve
                                     ON tbcat.ID = tbve.CategoryID
                                     JOIN tblschedule as tbsche ON tbsche.RegistrationNumber = tbve.RegistrationNumber
@@ -171,12 +171,26 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
                                     $resultCatID = mysqli_fetch_array($queryCatID);
                                     $catID = $resultCatID['ID'];
 
+                                    // Take the ID of the Category if user have not sign up
+                                    $queryCatIDUnregistered =  mysqli_query($con, "SELECT ID FROM tblcategory WHERE VehicleCat = '$vehicleCategory'");
+                                    $resultCatIDUnregistered = mysqli_fetch_array($queryCatIDUnregistered);
+                                    $catIDUnregistered = $resultCatIDUnregistered['ID'];
+
                                     // Check if the user exists in the system
-                                    $checkUserQuery = mysqli_query($con, "SELECT ID FROM tblregusers WHERE ID = '$userId'");
+                                    $checkUserQuery = mysqli_query($con, "SELECT tblregusers.ID FROM tblregusers JOIN tblvehicle ON tblregusers.ID = tblvehicle.OwnerID WHERE tblvehicle.RegistrationNumber = '$registrationNumber'");
                                     $userResult = mysqli_fetch_array($checkUserQuery);
                                     echo $userResult;
-
-                                    if ($userResult > 0) {
+                                    if ($userResult == null) {
+                                        // User does not exist
+                                        $queryInsertUnregistered = "INSERT INTO tblschedule_unregistered (OwnerName, CCCD, PhoneNumber, VehicleCategory, RegistrationNumber, DateSchedule, ExpectDateOut, Status, ActionBy)
+                                                                VALUES ('$ownerName', '$cccd', '$phoneUnregistered', '$catIDUnregistered', '$registrationNumberUnregistered', '$dateScheduleUnregistered', '$dateOutUnregistered', '$status', '$userId')";
+                                        if (mysqli_query($con, $queryInsertUnregistered)) {
+                                            echo "<script>alert('Booking schedule created for unregistered user.');</script>";
+                                            echo "<script>window.location.href = 'dashboard.php';</script>";
+                                        } else {
+                                            echo "<script>alert('Something went wrong. Please try again.');</script>";
+                                        }
+                                    } else {
                                         // Insert into tblschedule
                                         $queryInsert = "INSERT INTO tblschedule (OwnerID, CategoryID, RegistrationNumber, DateSchedule, ExpectDateOut, Status)
                                                     VALUES ('$userId', '$catID', '$registrationNumber', '$dateSchedule', '$dateOut', '$status')";
@@ -186,16 +200,7 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
                                         } else {
                                             echo "<script>alert('Something went wrong. Please try again.');</script>";
                                         }
-                                    } else {
-                                        // User does not exist
-                                        $queryInsertUnregistered = "INSERT INTO tblschedule_unregistered (OwnerName, CCCD, PhoneNumber, VehicleCategory, RegistrationNumber, DateSchedule, ExpectDateOut, Status, ActionBy)
-                                                                VALUES ('$ownerName', '$cccd', '$phoneNumberUnregistered', '$catID', '$registrationNumberUnregistered', '$dateScheduleUnregistered', '$dateOutUnregistered', '$status', '$userId')";
-                                        if (mysqli_query($con, $queryInsertUnregistered)) {
-                                            echo "<script>alert('Booking schedule created for unregistered user.');</script>";
-                                            echo "<script>window.location.href = 'dashboard.php';</script>";
-                                        } else {
-                                            echo "<script>alert('Something went wrong. Please try again.');</script>";
-                                        }
+                                        
                                     }
                                 }
 

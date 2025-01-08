@@ -1,6 +1,6 @@
 <?php
 session_start();
-error_reporting(0);
+// error_reporting(0);
 include('includes/dbconnection.php');
 if (strlen($_SESSION['vpmsuid'] == 0)) {
     header('location:logout.php');
@@ -9,10 +9,11 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
     if (isset($_GET['edit_id'])) {
         $edit_id = intval($_GET['edit_id']);
         $query = mysqli_query($con, "SELECT ts.ID, ts.CategoryID, tc.VehicleCat, ts.RegistrationNumber, ts.DateSchedule,
+                                     ts.ExpectDateOut
                                      FROM tblschedule ts
                                      JOIN tblcategory tc ON ts.CategoryID = tc.ID
                                      WHERE ts.ID = '$edit_id'");
-        $row = mysqli_fetch_assoc($query);
+        $row = mysqli_fetch_array($query);
         if (!$row) {
             echo "<script>alert('Invalid Booking ID.');</script>";
             echo "<script>window.location.href='history-booking.php';</script>";
@@ -78,7 +79,7 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
                 <input type="date" name="dateOut" id="dateOut" class="form-control" value="<?php echo htmlentities($row['ExpectDateOut']); ?>" required>
             </div>
             <button type="submit" name="update" class="btn btn-primary">Update Booking</button>
-            <a href="history_booking.php" class="btn btn-secondary">Cancel</a>
+            <a href="history-booking.php" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 </body>

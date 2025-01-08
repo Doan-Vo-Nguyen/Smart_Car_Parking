@@ -48,7 +48,7 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
                         <div class="page-title">
                             <ol class="breadcrumb text-right">
                                 <li><a href="dashboard.php">Dashboard</a></li>
-                                <li class="active">Book Month</li>
+                                <li class="active">Register Month</li>
                             </ol>
                         </div>
                     </div>
@@ -68,98 +68,69 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
                         <div class="card-body">
                             <form action="" method="post">
                                 <div class="form-group">
-                                    <label for="ownerName" class="form-control-label">Owner Name</label>
-                                    <input type="text" name="ownerName" id="ownerName" class="form-control" required>
-                                </div>
-
-                                <div class="form-group">
-                                        <label for="vehicleCategory" class="form-control-label">Vehicle Category</label>
-                                        <select name="vehicleCategory" id="vehicleCategory" class="form-control" required>
-                                            <option value="">Select Category</option>
-                                            <?php
-                                            $query = mysqli_query($con, "SELECT * FROM tblcategory");
-                                            while ($row = mysqli_fetch_array($query)) {
-                                            ?>
-                                                <option value="<?php echo $row['VehicleCat']; ?>"><?php echo $row['VehicleCat']; ?></option>
-                                            <?php } ?>
-                                        </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="cccd" class="form-control-label">CCCD (Citizen ID)</label>
-                                    <input type="text" name="cccd" id="cccd" class="form-control" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="phoneNumber" class="form-control-label">Phone Number</label>
-                                    <input type="text" name="phoneNumber" id="phoneNumber" class="form-control" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="registrationNumber" class="form-control-label">Registration Number(As format XXXX-XXXXX)</label>
-                                    <input type="text" name="registrationNumber" id="registrationNumber" class="form-control" required>
-                                </div>
-
-                                <!-- Month as Select Dropdown -->
-                                <div class="form-group">
-                                    <label for="month" class="form-control-label">Month</label>
-                                    <select name="month" id="month" class="form-control" required onchange="calculateNextMonth()">
-                                        <option value="">Select Month</option>
+                                    <label for="registrationNumber" class="form-control-label">Registration Number</label>
+                                    <select name="registrationNumber" id="registrationNumber" class="form-control" required>
+                                        <option value="">Select Registration Number</option>
                                         <?php
-                                        // Generate months from 1 to 12
+                                        $userId = $_SESSION['vpmsuid'];
+                                        $query = mysqli_query($con, "SELECT * FROM tblvehicle WHERE OwnerID = '$userId'");
+                                        while ($row = mysqli_fetch_array($query)) {
+                                        ?>
+                                            <option value="<?php echo $row['RegistrationNumber']; ?>"><?php echo $row['RegistrationNumber']; ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="startDate" class="form-control-label">Start Date</label>
+                                    <input type="date" name="startDate" id="startDate" class="form-control" required onchange="calculateEndDate()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="monthsToAdd" class="form-control-label">Additional Months</label>
+                                    <select name="monthsToAdd" id="monthsToAdd" class="form-control" required onchange="calculateEndDate()">
+                                        <?php
                                         for ($i = 1; $i <= 12; $i++) {
-                                            echo "<option value='$i'>" . date("F", mktime(0, 0, 0, $i, 10)) . "</option>";
+                                            echo "<option value='$i'>$i Month(s)</option>";
                                         }
                                         ?>
                                     </select>
                                 </div>
 
-                                <!-- Display Next Month Under Month -->
-                                <div class="form-group" id="nextMonthContainer" style="display: none;">
-                                    <label for="nextMonth" class="form-control-label">Next Month:</label>
-                                    <span id="nextMonth" class="form-control" name="nextMonth"></span>
+                                <div class="form-group" id="endDateContainer" style="display: none;">
+                                    <label for="endDate" class="form-control-label">End Date:</label>
+                                    <span id="endDate" class="form-control"></span>
                                 </div>
+
+                                <!-- Hidden Input for End Date -->
+                                <input type="hidden" name="endDateHidden" id="endDateHidden">
+
                                 <button type="submit" name="submit" class="btn btn-primary">Submit</button>
                             </form>
 
                             <?php
                             if (isset($_POST['submit'])) {
-                                $ownerName = $_POST['ownerName'];
+                                $owner = $_SESSION['vpmsuid'];
                                 $registrationNumber = $_POST['registrationNumber'];
-                                $cccd = $_POST['cccd'];
-                                $phoneNumber = $_POST['phoneNumber'];
-                                $month = $_POST['month'];
-                                $dateOut = $_POST['nextMonth'];
+                                $startDate = $_POST['startDate'];
+                                $endDate = $_POST['endDateHidden'];
                                 $status = 'Booked'; // Default status
+                                $note = 'Month';
 
-                                $queryCatID =  mysqli_query($con, "SELECT ID FROM tblcategory WHERE VehicleCat like '$vehicleCategory'");
+                                // Take the ID of the Category
+                                $queryCatID =  mysqli_query($con, "SELECT ID FROM tblcategory WHERE ID IN (SELECT CategoryID FROM tblvehicle WHERE RegistrationNumber = '$registrationNumber')");
                                 $resultCatID = mysqli_fetch_array($queryCatID);
                                 $catID = $resultCatID['ID'];
 
-                                // Query to get the OwnerID from tblreguser by OwnerName
-                                $queryOwner = mysqli_query($con, "SELECT ID FROM tblreguser WHERE FullName='$ownerName'");
-                                $resultOwner = mysqli_fetch_array($queryOwner);
-                                $ownerID = $resultOwner['ID'];
-
-                                if ($ownerID) {
-                                    // Insert the new registration week into tblregister_week
-                                    $queryInsert = "INSERT INTO tblschedule (OwnerID, CategoryID, PhoneNumber, CCCD, RegistrationNumber, DateSchedule, ExpectDateOut, Status)
-                                    VALUES ('$ownerID', '$catID', '$phoneNumber', '$cccd', '$registrationNumber', '$weekNumber', '$dateOut', '$status')";
+                                if ($owner) {
+                                    // Insert the new registration month into tblschedule
+                                    $queryInsert = "INSERT INTO tblschedule (OwnerID, CategoryID, RegistrationNumber, DateSchedule, ExpectDateOut, Status, Note)
+                                    VALUES ('$owner', '$catID', '$registrationNumber', '$startDate', '$endDate', '$status', '$note')";
 
                                     $insertResult = mysqli_query($con, $queryInsert);
 
                                     if ($insertResult) {
                                         echo "<script>alert('Registration for the month has been successfully created.');</script>";
-                                        echo "<script>window.location.href = 'dashboard.php';</script>";
-                                    } else {
-                                        echo "<script>alert('Something went wrong. Please try again.');</script>";
-                                    }
-                                } else {
-                                    // User does not exist
-                                    $queryInsertUnregistered = "INSERT INTO tblschedule_unregistered (OwnerName, CCCD, PhoneNumber, VehicleCategory, RegistrationNumber, DateSchedule, ExpectDateOut, Status, ActionBy)
-                                                                VALUES ('$ownerName', '$cccd', '$phoneNumber', '$catID', '$registrationNumber', '$dateSchedule', '$dateOut', '$status', '$actionBy')";
-                                    if (mysqli_query($con, $queryInsertUnregistered)) {
-                                        echo "<script>alert('Booking schedule created for unregistered user.');</script>";
                                         echo "<script>window.location.href = 'dashboard.php';</script>";
                                     } else {
                                         echo "<script>alert('Something went wrong. Please try again.');</script>";
@@ -191,21 +162,24 @@ if (strlen($_SESSION['vpmsuid'] == 0)) {
 <script src="../admin/assets/js/main.js"></script>
 
 <script>
-    function calculateNextMonth() {
-        var selectedMonth = document.getElementById('month').value;
-        
-        if (selectedMonth) {
-            var currentYear = new Date().getFullYear();
-            var nextMonthDate = new Date(currentYear, selectedMonth); // next month date
+    function calculateEndDate() {
+        var startDate = document.getElementById('startDate').value;
+        var monthsToAdd = document.getElementById('monthsToAdd').value;
 
-            nextMonthDate.setMonth(nextMonthDate.getMonth() + 1); // Get next month
+        if (startDate && monthsToAdd) {
+            var date = new Date(startDate);
+            // Add the selected number of months to the start date
+            date.setMonth(date.getMonth() + parseInt(monthsToAdd));
 
-            // Get the name of the next month
-            var nextMonthName = nextMonthDate.toLocaleString('default', { month: 'long' });
+            // Format the end date to 'yyyy-mm-dd'
+            var formattedEndDate = date.toISOString().split('T')[0];
 
-            // Display next month under the month field
-            document.getElementById('nextMonth').innerText = nextMonthName;
-            document.getElementById('nextMonthContainer').style.display = 'block'; // Show the next month
+            // Show the end date and display it in the span
+            document.getElementById('endDate').innerText = formattedEndDate;
+            document.getElementById('endDateContainer').style.display = 'block';
+
+            // Set the hidden input's value
+            document.getElementById('endDateHidden').value = formattedEndDate;
         }
     }
 </script>

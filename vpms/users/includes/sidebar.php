@@ -11,6 +11,7 @@
                     </a>
                     <ul class="sub-menu children dropdown-menu">
                         <li><i class="menu-icon fa fa-th"></i><a href="view-vehicle.php">View Vehicle</a></li>
+                        <li><i class="menu-icon fa fa-th"></i><a href="view-vehicle-history.php">View Vehicle Parking History</a></li>
                         <li><i class="menu-icon fa fa-th"></i><a href="add-vehicle.php">Add Vehicle</a></li>
                     </ul>
                 </li>

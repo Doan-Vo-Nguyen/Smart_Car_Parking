@@ -4,6 +4,7 @@ check_cache/
 /draw_image.py
 /test.py
 /res.jpg
+/data
 cache.jpg
 cache_ch.jpg
 edge.jpg
